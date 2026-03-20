@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoardGameShelf", "BoardGameShelf\BoardGameShelf.csproj", "{7E2B981B-7EDF-4C19-816C-CCAB696065FC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7E2B981B-7EDF-4C19-816C-CCAB696065FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E2B981B-7EDF-4C19-816C-CCAB696065FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E2B981B-7EDF-4C19-816C-CCAB696065FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E2B981B-7EDF-4C19-816C-CCAB696065FC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
