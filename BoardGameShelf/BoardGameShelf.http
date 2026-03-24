@@ -1,6 +1,6 @@
-@BoardGameShelf_HostAddress = http://localhost:5147
+@BoardGameShelf_HostAddress = https://localhost:7084
 
-GET {{BoardGameShelf_HostAddress}}/weatherforecast/
+GET {{BoardGameShelf_HostAddress}}/health/hello
 Accept: application/json
 
 ###
