@@ -15,4 +15,6 @@ app.UseHttpsRedirection();
 
 app.MapGroup("/health").MapHealthEndpoints();
 
+app.MapGet("/", () => "Board Game Shelf");
+
 app.Run();
