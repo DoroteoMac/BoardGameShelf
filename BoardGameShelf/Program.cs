@@ -1,4 +1,6 @@
+using BoardGameShelf.Data;
 using BoardGameShelf.Endpoints;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +8,10 @@ var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://+:{port}");
 
 builder.Services.AddOpenApi();
+
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
+    ?? builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 
 var app = builder.Build();
 
@@ -18,6 +24,6 @@ app.UseHttpsRedirection();
 
 app.MapGroup("/health").MapHealthEndpoints();
 
-app.MapGet("/", () => "Board Game Shelf");
+app.MapGet("/", () => "BGS Running...");
 
 app.Run();
