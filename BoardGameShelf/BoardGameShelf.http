@@ -9,3 +9,8 @@ GET {{BoardGameShelf_HostAddress}}/health/hello
 Accept: application/json
 
 ###
+
+GET {{BoardGameShelf_HostAddress}}/games
+Accept: application/json
+
+###

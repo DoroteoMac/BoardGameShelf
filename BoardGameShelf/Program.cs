@@ -23,6 +23,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapGroup("/health").MapHealthEndpoints();
+app.MapGroup("/games").MapGamesEndpoints();
 
 app.MapGet("/", () => "BGS Running...");
 
