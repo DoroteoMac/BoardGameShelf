@@ -11,11 +11,17 @@ namespace BoardGameShelf.Services;
 public class GamesService(AppDbContext db)
 {
     /// <summary>
-    /// Returns all games from the database.
+    /// Returns a paginated list of all games from the database.
     /// </summary>
-    public async Task<List<Game>> GetAllAsync()
+    public async Task<PagedResult<Game>> GetAllAsync(int limit = 10, int offset = 0)
     {
-        return await db.Games.ToListAsync();
+        limit = Math.Clamp(limit, 1, 100);
+        offset = Math.Max(offset, 0);
+
+        var total = await db.Games.CountAsync();
+        var items = await db.Games.Skip(offset).Take(limit).ToListAsync();
+
+        return new PagedResult<Game> { Items = items, Total = total, Limit = limit, Offset = offset };
     }
 
     /// <summary>

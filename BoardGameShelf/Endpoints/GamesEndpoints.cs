@@ -23,11 +23,11 @@ public static class GamesEndpoints
     }
 
     /// <summary>
-    /// Returns all games from the database.
+    /// Returns a paginated list of all games.
     /// </summary>
-    private static async Task<IResult> GetAllGames(GamesService service)
+    private static async Task<IResult> GetAllGames(GamesService service, int limit = 10, int offset = 0)
     {
-        return Results.Ok(await service.GetAllAsync());
+        return Results.Ok(await service.GetAllAsync(limit, offset));
     }
 
     /// <summary>

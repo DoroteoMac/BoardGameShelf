@@ -29,7 +29,8 @@ public class GamesServiceTests
 
         var result = await service.GetAllAsync();
 
-        Assert.Equal(2, result.Count);
+        Assert.Equal(2, result.Items.Count);
+        Assert.Equal(2, result.Total);
     }
 
     [Fact]
@@ -40,7 +41,39 @@ public class GamesServiceTests
 
         var result = await service.GetAllAsync();
 
-        Assert.Empty(result);
+        Assert.Empty(result.Items);
+        Assert.Equal(0, result.Total);
+    }
+
+    [Fact]
+    public async Task GetAllAsync_RespectsLimitAndOffset()
+    {
+        await using var db = CreateDb();
+        db.Games.AddRange(
+            new Game(0, "Catan", 3, 4),
+            new Game(0, "Pandemic", 2, 4),
+            new Game(0, "Ticket to Ride", 2, 5)
+        );
+        await db.SaveChangesAsync();
+        var service = new GamesService(db);
+
+        var result = await service.GetAllAsync(limit: 2, offset: 1);
+
+        Assert.Equal(2, result.Items.Count);
+        Assert.Equal(3, result.Total);
+        Assert.Equal(2, result.Limit);
+        Assert.Equal(1, result.Offset);
+    }
+
+    [Fact]
+    public async Task GetAllAsync_ClampsLimitTo100()
+    {
+        await using var db = CreateDb();
+        var service = new GamesService(db);
+
+        var result = await service.GetAllAsync(limit: 999);
+
+        Assert.Equal(100, result.Limit);
     }
 
     [Fact]
