@@ -14,3 +14,23 @@ GET {{BoardGameShelf_HostAddress}}/games
 Accept: application/json
 
 ###
+
+GET {{BoardGameShelf_HostAddress}}/games/1
+Accept: application/json
+
+###
+
+POST {{BoardGameShelf_HostAddress}}/games
+Content-Type: application/json
+
+{
+  "name": "Catan",
+  "minPlayers": 3,
+  "maxPlayers": 4
+}
+
+###
+
+DELETE {{BoardGameShelf_HostAddress}}/games/1
+
+###
