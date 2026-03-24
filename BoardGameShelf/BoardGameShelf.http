@@ -1,4 +1,4 @@
-@BoardGameShelf_HostAddress = https://localhost:7084
+@BoardGameShelf_HostAddress = http://localhost:8080
 
 GET {{BoardGameShelf_HostAddress}}/
 Accept: application/json
