@@ -113,7 +113,7 @@ public class GamesServiceTests
 
         Assert.NotEqual(0, result.Id);
         Assert.Equal("Catan", result.Name);
-        Assert.Equal(-3, result.MinPlayers);
+        Assert.Equal(3, result.MinPlayers);
         Assert.Equal(4, result.MaxPlayers);
         Assert.Equal(1, await db.Games.CountAsync());
     }
