@@ -40,21 +40,6 @@ OpenAPI docs are available at `/openapi/v1.json` when running in Development mod
 
 Each top-level folder (`Endpoints/`, `Services/`, `Models/`) is organized into sub-folders by domain (e.g. `Games/`, `Cache/`). Files that are shared across domains (e.g. `PagedResult`) stay in the top-level folder. New domains always get their own sub-folder — never add files directly to the top-level folder.
 
-```
-Endpoints/
-  Games/         — GamesEndpoints.cs
-  Health/        — HealthEndpoints.cs
-Services/
-  Games/         — GamesService.cs
-  Cache/         — ICacheService.cs, CacheService.cs
-Models/
-  Games/         — Game.cs, CreateGameRequest.cs
-  PagedResult.cs — shared, lives at top level
-Data/
-  AppDbContext.cs
-Program.cs
-```
-
 Namespaces must match the folder structure (e.g. `BoardGameShelf.Services.Games`, `BoardGameShelf.Models.Games`).
 
 ### Service layer
