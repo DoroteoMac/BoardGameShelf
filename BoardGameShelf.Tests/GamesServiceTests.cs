@@ -17,8 +17,8 @@ public class GamesServiceTests
         return new AppDbContext(options);
     }
 
-    private static GamesService CreateService(AppDbContext db) =>
-        new(db, new NoOpCacheService());
+    private static IGamesService CreateService(AppDbContext db) =>
+        new GamesService(db, new NoOpCacheService());
 
     private class NoOpCacheService : ICacheService
     {

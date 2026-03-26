@@ -44,11 +44,36 @@ Namespaces must match the folder structure (e.g. `BoardGameShelf.Services.Games`
 
 ### Service layer
 
-Business logic lives in `Services/`, not in endpoints. Endpoints parse the request, call the service, and return the response. Services are registered as scoped in `Program.cs` via `builder.Services.AddScoped<T>()`.
+Business logic lives in `Services/`, not in endpoints. Endpoints parse the request, call the service, and return the response.
+
+Every service must have a corresponding interface in the same folder (e.g. `IGamesService` alongside `GamesService`). Endpoints and other consumers always depend on the interface, never the concrete class. Services are registered against their interface in `Program.cs` via `builder.Services.AddScoped<IFooService, FooService>()`.
 
 ### Adding new endpoints
 
-New endpoints go in `Endpoints/<Domain>/` as static extension methods on `RouteGroupBuilder`, registered in `Program.cs` via `app.MapGroup(...)`. The project uses Minimal API style.
+Endpoints use a class-based pattern. Each endpoint class:
+- Takes its service interface via constructor injection
+- Has a static `Map(RouteGroupBuilder group)` method that registers all routes, injecting the class itself (`FooEndpoints e`) into each delegate so handler methods stay clean
+- Has private instance methods for each handler with no injected parameters
+
+```csharp
+public class GamesEndpoints(IGamesService service)
+{
+    public static RouteGroupBuilder Map(RouteGroupBuilder group)
+    {
+        group.MapGet("/", async (GamesEndpoints e, int limit = 10) => await e.GetAll(limit));
+        return group;
+    }
+
+    private async Task<IResult> GetAll(int limit) =>
+        Results.Ok(await service.GetAllAsync(limit));
+}
+```
+
+Registered in `Program.cs` as:
+```csharp
+builder.Services.AddScoped<GamesEndpoints>();
+GamesEndpoints.Map(app.MapGroup("/games"));
+```
 
 ### Database migrations
 
