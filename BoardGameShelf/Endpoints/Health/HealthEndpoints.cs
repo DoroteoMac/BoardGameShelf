@@ -1,4 +1,4 @@
-namespace BoardGameShelf.Endpoints;
+namespace BoardGameShelf.Endpoints.Health;
 
 /// <summary>
 /// Defines endpoints for health checking the service.

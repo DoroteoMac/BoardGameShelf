@@ -1,27 +1,33 @@
 using System.ComponentModel.DataAnnotations;
 using BoardGameShelf.Data;
+using BoardGameShelf.Models.Games;
 using BoardGameShelf.Models;
+using BoardGameShelf.Services.Cache;
 using Microsoft.EntityFrameworkCore;
 
-namespace BoardGameShelf.Services;
+namespace BoardGameShelf.Services.Games;
 
 /// <summary>
 /// Handles business logic for managing board games.
 /// </summary>
-public class GamesService(AppDbContext db)
+public class GamesService(AppDbContext db, ICacheService cache)
 {
+    private static readonly TimeSpan CacheExpiration = TimeSpan.FromMinutes(5);
+
+    private static string GamesListKey(int limit, int offset) => $"games:list:{limit}:{offset}";
+
     /// <summary>
-    /// Returns a paginated list of all games from the database.
+    /// Returns a paginated list of all games, served from cache when available.
     /// </summary>
-    public async Task<PagedResult<Game>> GetAllAsync(int limit = 10, int offset = 0)
+    public Task<PagedResult<Game>> GetAllAsync(int limit = 10, int offset = 0)
     {
         limit = Math.Clamp(limit, 1, 100);
         offset = Math.Max(offset, 0);
 
-        var total = await db.Games.CountAsync();
-        var items = await db.Games.Skip(offset).Take(limit).ToListAsync();
-
-        return new PagedResult<Game> { Items = items, Total = total, Limit = limit, Offset = offset };
+        return cache.GetOrCreateAsync(
+            GamesListKey(limit, offset),
+            () => FetchGamesFromDbAsync(limit, offset),
+            CacheExpiration);
     }
 
     /// <summary>
@@ -54,6 +60,8 @@ public class GamesService(AppDbContext db)
         var game = new Game(0, request.Name, request.MinPlayers, request.MaxPlayers);
         db.Games.Add(game);
         await db.SaveChangesAsync();
+
+        cache.Remove(GamesListKey(10, 0));
         return game;
     }
 
@@ -64,8 +72,18 @@ public class GamesService(AppDbContext db)
     {
         var game = await db.Games.FindAsync(id);
         if (game is null) return false;
+
         db.Games.Remove(game);
         await db.SaveChangesAsync();
+
+        cache.Remove(GamesListKey(10, 0));
         return true;
+    }
+
+    private async Task<PagedResult<Game>> FetchGamesFromDbAsync(int limit, int offset)
+    {
+        var total = await db.Games.CountAsync();
+        var items = await db.Games.Skip(offset).Take(limit).ToListAsync();
+        return new PagedResult<Game> { Items = items, Total = total, Limit = limit, Offset = offset };
     }
 }

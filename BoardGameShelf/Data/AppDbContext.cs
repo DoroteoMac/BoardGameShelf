@@ -1,4 +1,4 @@
-using BoardGameShelf.Models;
+using BoardGameShelf.Models.Games;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoardGameShelf.Data;

@@ -1,4 +1,4 @@
-namespace BoardGameShelf.Models;
+namespace BoardGameShelf.Models.Games;
 
 /// <summary>
 /// Represents a board game in the collection.

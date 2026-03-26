@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using BoardGameShelf.Models;
-using BoardGameShelf.Services;
+using BoardGameShelf.Models.Games;
+using BoardGameShelf.Services.Games;
 
-namespace BoardGameShelf.Endpoints;
+namespace BoardGameShelf.Endpoints.Games;
 
 /// <summary>
 /// Defines endpoints for managing board games.

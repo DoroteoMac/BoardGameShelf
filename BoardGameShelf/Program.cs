@@ -1,6 +1,8 @@
 using BoardGameShelf.Data;
-using BoardGameShelf.Endpoints;
-using BoardGameShelf.Services;
+using BoardGameShelf.Endpoints.Games;
+using BoardGameShelf.Endpoints.Health;
+using BoardGameShelf.Services.Cache;
+using BoardGameShelf.Services.Games;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +15,8 @@ builder.Services.AddOpenApi();
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
     ?? builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<ICacheService, CacheService>();
 builder.Services.AddScoped<GamesService>();
 
 var app = builder.Build();
