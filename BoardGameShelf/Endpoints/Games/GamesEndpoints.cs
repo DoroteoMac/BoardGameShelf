@@ -7,17 +7,17 @@ namespace BoardGameShelf.Endpoints.Games;
 /// <summary>
 /// Defines endpoints for managing board games.
 /// </summary>
-public static class GamesEndpoints
+public class GamesEndpoints(IGamesService service)
 {
     /// <summary>
     /// Maps all game-related endpoints to the route group.
     /// </summary>
-    public static RouteGroupBuilder MapGamesEndpoints(this RouteGroupBuilder group)
+    public static RouteGroupBuilder Map(RouteGroupBuilder group)
     {
-        group.MapGet("/", GetAllGames);
-        group.MapGet("/{id}", GetGameById);
-        group.MapPost("/", CreateGame);
-        group.MapDelete("/{id}", DeleteGame);
+        group.MapGet("/", async (GamesEndpoints e, int limit = 10, int offset = 0) => await e.GetAllGames(limit, offset));
+        group.MapGet("/{id}", async (GamesEndpoints e, int id) => await e.GetGameById(id));
+        group.MapPost("/", async (GamesEndpoints e, CreateGameRequest request) => await e.CreateGame(request));
+        group.MapDelete("/{id}", async (GamesEndpoints e, int id) => await e.DeleteGame(id));
 
         return group;
     }
@@ -25,7 +25,7 @@ public static class GamesEndpoints
     /// <summary>
     /// Returns a paginated list of all games.
     /// </summary>
-    private static async Task<IResult> GetAllGames(GamesService service, int limit = 10, int offset = 0)
+    private async Task<IResult> GetAllGames(int limit, int offset)
     {
         return Results.Ok(await service.GetAllAsync(limit, offset));
     }
@@ -33,7 +33,7 @@ public static class GamesEndpoints
     /// <summary>
     /// Returns a single game by its ID.
     /// </summary>
-    private static async Task<IResult> GetGameById(int id, GamesService service)
+    private async Task<IResult> GetGameById(int id)
     {
         var game = await service.GetByIdAsync(id);
         return game is null ? Results.NotFound() : Results.Ok(game);
@@ -42,7 +42,7 @@ public static class GamesEndpoints
     /// <summary>
     /// Deletes a game by its ID.
     /// </summary>
-    private static async Task<IResult> DeleteGame(int id, GamesService service)
+    private async Task<IResult> DeleteGame(int id)
     {
         var deleted = await service.DeleteAsync(id);
         return deleted ? Results.NoContent() : Results.NotFound();
@@ -51,7 +51,7 @@ public static class GamesEndpoints
     /// <summary>
     /// Creates a new game and returns the created game with its assigned ID.
     /// </summary>
-    private static async Task<IResult> CreateGame(CreateGameRequest request, GamesService service)
+    private async Task<IResult> CreateGame(CreateGameRequest request)
     {
         try
         {

@@ -17,7 +17,8 @@ var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<ICacheService, CacheService>();
-builder.Services.AddScoped<GamesService>();
+builder.Services.AddScoped<IGamesService, GamesService>();
+builder.Services.AddScoped<GamesEndpoints>();
 
 var app = builder.Build();
 
@@ -38,7 +39,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapGroup("/health").MapHealthEndpoints();
-app.MapGroup("/games").MapGamesEndpoints();
+GamesEndpoints.Map(app.MapGroup("/games"));
 
 app.MapGet("/", () => "BGS Running...");
 

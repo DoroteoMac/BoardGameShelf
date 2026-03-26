@@ -10,7 +10,7 @@ namespace BoardGameShelf.Services.Games;
 /// <summary>
 /// Handles business logic for managing board games.
 /// </summary>
-public class GamesService(AppDbContext db, ICacheService cache)
+public class GamesService(AppDbContext db, ICacheService cache) : IGamesService
 {
     private static readonly TimeSpan CacheExpiration = TimeSpan.FromMinutes(5);
 
