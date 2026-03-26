@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace BoardGameShelf.Models;
+namespace BoardGameShelf.Models.Games;
 
 /// <summary>
 /// Represents the data required to create a new game.

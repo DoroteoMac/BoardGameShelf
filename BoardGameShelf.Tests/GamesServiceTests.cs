@@ -1,7 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using BoardGameShelf.Data;
-using BoardGameShelf.Models;
-using BoardGameShelf.Services;
+using BoardGameShelf.Models.Games;
+using BoardGameShelf.Services.Cache;
+using BoardGameShelf.Services.Games;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoardGameShelf.Tests;
@@ -16,6 +17,15 @@ public class GamesServiceTests
         return new AppDbContext(options);
     }
 
+    private static GamesService CreateService(AppDbContext db) =>
+        new(db, new NoOpCacheService());
+
+    private class NoOpCacheService : ICacheService
+    {
+        public Task<T> GetOrCreateAsync<T>(string key, Func<Task<T>> factory, TimeSpan expiration) => factory();
+        public void Remove(string key) { }
+    }
+
     [Fact]
     public async Task GetAllAsync_ReturnsAllGames()
     {
@@ -25,7 +35,7 @@ public class GamesServiceTests
             new Game(0, "Pandemic", 2, 4)
         );
         await db.SaveChangesAsync();
-        var service = new GamesService(db);
+        var service = CreateService(db);
 
         var result = await service.GetAllAsync();
 
@@ -37,7 +47,7 @@ public class GamesServiceTests
     public async Task GetAllAsync_ReturnsEmptyList_WhenNoGames()
     {
         await using var db = CreateDb();
-        var service = new GamesService(db);
+        var service = CreateService(db);
 
         var result = await service.GetAllAsync();
 
@@ -55,7 +65,7 @@ public class GamesServiceTests
             new Game(0, "Ticket to Ride", 2, 5)
         );
         await db.SaveChangesAsync();
-        var service = new GamesService(db);
+        var service = CreateService(db);
 
         var result = await service.GetAllAsync(limit: 2, offset: 1);
 
@@ -69,7 +79,7 @@ public class GamesServiceTests
     public async Task GetAllAsync_ClampsLimitTo100()
     {
         await using var db = CreateDb();
-        var service = new GamesService(db);
+        var service = CreateService(db);
 
         var result = await service.GetAllAsync(limit: 999);
 
@@ -83,7 +93,7 @@ public class GamesServiceTests
         db.Games.Add(new Game(0, "Catan", 3, 4));
         await db.SaveChangesAsync();
         var game = db.Games.First();
-        var service = new GamesService(db);
+        var service = CreateService(db);
 
         var result = await service.GetByIdAsync(game.Id);
 
@@ -95,7 +105,7 @@ public class GamesServiceTests
     public async Task GetByIdAsync_ReturnsNull_WhenGameDoesNotExist()
     {
         await using var db = CreateDb();
-        var service = new GamesService(db);
+        var service = CreateService(db);
 
         var result = await service.GetByIdAsync(999);
 
@@ -106,7 +116,7 @@ public class GamesServiceTests
     public async Task CreateAsync_CreatesAndReturnsGame()
     {
         await using var db = CreateDb();
-        var service = new GamesService(db);
+        var service = CreateService(db);
         var request = new CreateGameRequest { Name = "Catan", MinPlayers = 3, MaxPlayers = 4 };
 
         var result = await service.CreateAsync(request);
@@ -122,7 +132,7 @@ public class GamesServiceTests
     public async Task CreateAsync_ThrowsValidationException_WhenNameIsEmpty()
     {
         await using var db = CreateDb();
-        var service = new GamesService(db);
+        var service = CreateService(db);
         var request = new CreateGameRequest { Name = "", MinPlayers = 2, MaxPlayers = 4 };
 
         await Assert.ThrowsAsync<ValidationException>(() => service.CreateAsync(request));
@@ -132,7 +142,7 @@ public class GamesServiceTests
     public async Task CreateAsync_ThrowsValidationException_WhenMaxPlayersIsLessThanMinPlayers()
     {
         await using var db = CreateDb();
-        var service = new GamesService(db);
+        var service = CreateService(db);
         var request = new CreateGameRequest { Name = "Catan", MinPlayers = 4, MaxPlayers = 2 };
 
         await Assert.ThrowsAsync<ValidationException>(() => service.CreateAsync(request));
@@ -145,7 +155,7 @@ public class GamesServiceTests
         db.Games.Add(new Game(0, "Catan", 3, 4));
         await db.SaveChangesAsync();
         var game = db.Games.First();
-        var service = new GamesService(db);
+        var service = CreateService(db);
 
         var result = await service.DeleteAsync(game.Id);
 
@@ -157,7 +167,7 @@ public class GamesServiceTests
     public async Task DeleteAsync_ReturnsFalse_WhenGameDoesNotExist()
     {
         await using var db = CreateDb();
-        var service = new GamesService(db);
+        var service = CreateService(db);
 
         var result = await service.DeleteAsync(999);
 

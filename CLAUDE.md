@@ -38,11 +38,9 @@ OpenAPI docs are available at `/openapi/v1.json` when running in Development mod
 
 ### Project structure
 
-- `Endpoints/` — one file per resource, using `RouteGroupBuilder` extension methods; handles HTTP concerns only
-- `Services/` — one file per resource; contains business logic and data access
-- `Models/` — EF Core entity classes and request/response models
-- `Data/AppDbContext.cs` — EF Core DbContext
-- `Program.cs` — app bootstrap, service registration, middleware, route mapping
+Each top-level folder (`Endpoints/`, `Services/`, `Models/`) is organized into sub-folders by domain (e.g. `Games/`, `Cache/`). Files that are shared across domains (e.g. `PagedResult`) stay in the top-level folder. New domains always get their own sub-folder — never add files directly to the top-level folder.
+
+Namespaces must match the folder structure (e.g. `BoardGameShelf.Services.Games`, `BoardGameShelf.Models.Games`).
 
 ### Service layer
 
@@ -50,7 +48,7 @@ Business logic lives in `Services/`, not in endpoints. Endpoints parse the reque
 
 ### Adding new endpoints
 
-New endpoints go in `Endpoints/` as static extension methods on `RouteGroupBuilder`, registered in `Program.cs` via `app.MapGroup(...)`. The project uses Minimal API style.
+New endpoints go in `Endpoints/<Domain>/` as static extension methods on `RouteGroupBuilder`, registered in `Program.cs` via `app.MapGroup(...)`. The project uses Minimal API style.
 
 ### Database migrations
 
